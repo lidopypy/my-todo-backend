@@ -1,4 +1,6 @@
 module.exports = {
-  userModel: require("./user-model"),
-  courseModel: require("./course-model"),
+  User: require("./user"),
+  Web3User: require("./web3user"),
+  GoogleUser: require("./googleUser"),
+  Todo: require("./todo"),
 };
