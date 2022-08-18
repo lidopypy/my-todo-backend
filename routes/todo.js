@@ -110,7 +110,7 @@ exports.fetchTodo = async (req, res) => {
       if (err) {
         return res.status(401);
       }
-      console.log("The todos are", todos);
+      // console.log("The todos are", todos);
       // console.log("todos : ", user.todo);
       // prints "The author is Ian Fleming"
       res.status(200).send({
@@ -121,7 +121,14 @@ exports.fetchTodo = async (req, res) => {
 };
 
 exports.updateLocalTodos = async (req, res) => {
-  const { todos, userId, googleUserId, web3UserId } = req.body;
-  console.log("todos : ", JSON.parse(todos));
-  console.log("todos.length : ", todos.length);
+  // console.log("req.body : ", req.body);
+  const { data, userId, googleUserId, web3UserId } = req.body;
+  data.map((todo) => {
+    console.log(todo._id);
+  });
+  console.log("userID : ", userId || googleUserId || web3UserId);
+  // console.log("data.length : ", data.length);
+  // console.log("type of data : ", typeof data);
+  // console.log("todos : ", JSON.parse(data));
+  // console.log("todos.length : ", todos[0]);
 };
