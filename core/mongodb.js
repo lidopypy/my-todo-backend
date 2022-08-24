@@ -10,7 +10,7 @@ const Atlas_server = process.env.DB_CONNECT;
 const Local_server = "mongodb://localhost:27017/test";
 // connect mongoDB atlas
 exports.mongoose
-  .connect(Local_server, {
+  .connect(Atlas_server, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
