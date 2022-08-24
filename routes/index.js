@@ -32,6 +32,11 @@ module.exports = (app) => {
     todo.updateTodo
   );
   app.post(
+    "/deleteTodo",
+    passport.authenticate("jwt", { session: false }),
+    todo.deleteTodo
+  );
+  app.post(
     "/fetchTodo",
     passport.authenticate("jwt", { session: false }),
     todo.fetchTodo

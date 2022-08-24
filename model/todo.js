@@ -30,15 +30,15 @@ const todoSchema = new mongoose.Schema({
     ref: "User",
   },
 
-  googleUserId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "GoogleUser",
-  },
+  // googleUserId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "GoogleUser",
+  // },
 
-  web3UserId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Web3User",
-  },
+  // web3UserId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Web3User",
+  // },
 
   check: {
     type: Boolean,

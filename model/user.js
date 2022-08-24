@@ -7,28 +7,64 @@ const userSchema = new mongoose.Schema({
 
   username: {
     type: String,
-    required: true,
+    required: function () {
+      return this.userType !== "web3User";
+    },
     minLength: 3,
     maxLength: 50,
   },
 
+  googleID: {
+    type: String,
+    required: function () {
+      return this.userType === "googleUser";
+    },
+    default: "",
+  },
+
+  thumbnail: {
+    type: String,
+    required: function () {
+      return this.userType === "googleUser";
+    },
+    default: "user",
+  },
+
   email: {
     type: String,
-    required: true,
+    required: function () {
+      return this.userType !== "web3User";
+    },
     minLength: 6,
     maxLength: 100,
   },
 
+  address: {
+    type: String,
+    required: function () {
+      return this.userType === "web3User";
+    },
+    minLength: 6,
+    maxLength: 100,
+    default: null,
+  },
+
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return this.userType === "normalUser";
+    },
     minLength: 6,
     maxLength: 1024,
   },
 
   todo: { type: Schema.Types.ObjectId, ref: "Todo" },
 
-  userType: { type: String, default: "normalUser" },
+  userType: {
+    type: String,
+    enum: ["googleUser", "normalUser", "web3User"],
+    required: true,
+  },
 
   create_time: { type: Date, default: Date.now },
 
@@ -38,7 +74,11 @@ const userSchema = new mongoose.Schema({
 //Mongoose schema pre middleware
 //Check users password is modified before save new user.
 userSchema.pre("save", async function (next) {
-  if (this.isModified("password") || this.isNew) {
+  console.log("this ; ", this.userType);
+  if (
+    (this.userType === "normalUser") &
+    (this.isModified("password") || this.isNew)
+  ) {
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
     next();

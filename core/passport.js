@@ -7,8 +7,8 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const Web3Strategy = require("passport-web3");
 const User = require("../model/user");
-const GoogleUser = require("../model/googleUser");
-const Web3User = require("../model/web3user");
+// const GoogleUser = require("../model/googleUser");
+// const Web3User = require("../model/web3user");
 // const LocalStrategy = require("passport-local");
 // const bcrypt = require("bcrypt");
 
@@ -20,21 +20,7 @@ opts.secretOrKey = process.env.PASSPORT_SECRET;
 passport.use(
   new JwtStrategy(opts, function (jwt_payload, done) {
     // console.log("jwt_payload : ", jwt_payload);
-    let Usermodel;
-    switch (jwt_payload.userType) {
-      case "googleUser":
-        Usermodel = GoogleUser;
-        break;
-      case "normalUser":
-        Usermodel = User;
-        break;
-      case "web3User":
-        Usermodel = Web3User;
-        break;
-      default:
-        break;
-    }
-    Usermodel.findOne({ _id: jwt_payload._id }, (err, user) => {
+    User.findOne({ _id: jwt_payload._id }, (err, user) => {
       if (err) {
         return done(err, false);
       }
@@ -46,31 +32,6 @@ passport.use(
     });
   })
 );
-
-// passport.use(
-//   new LocalStrategy((username, password, done) => {
-//     console.log(username, password);
-//     User.findOne({ email: username })
-//       .then(async (user) => {
-//         if (!user) {
-//           return done(null, false);
-//         }
-//         await bcrypt.compare(password, user.password, function (err, result) {
-//           if (err) {
-//             return done(null, false);
-//           }
-//           if (!result) {
-//             return done(null, false);
-//           } else {
-//             return done(null, user);
-//           }
-//         });
-//       })
-//       .catch((err) => {
-//         return done(null, false);
-//       });
-//   })
-// );
 
 //google use passport-google-oauth20
 passport.use(
@@ -84,18 +45,19 @@ passport.use(
     (accessToken, refreshToken, profile, done) => {
       // console.log(profile);
       //find or create new user.
-      GoogleUser.findOne({ googleID: profile.id }).then((foundUser) => {
+      User.findOne({ googleID: profile.id }).then((foundUser) => {
         if (foundUser) {
           console.log("User already exist");
           // console.log("foundUser: ", foundUser);
           done(null, foundUser);
         } else {
-          new GoogleUser({
+          new User({
             _id: new mongoose.Types.ObjectId(),
             username: profile.displayName,
             googleID: profile.id,
             thumbnail: profile.photos[0].value,
             email: profile.emails[0].value,
+            userType: "googleUser",
           })
             .save()
             .then((newUser) => {

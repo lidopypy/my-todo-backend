@@ -1,4 +1,4 @@
-const { Web3User } = require("../model");
+const { User } = require("../model");
 const mongoose = require("mongoose");
 var sigUtil = require("eth-sig-util");
 const jwt = require("jsonwebtoken");
@@ -11,7 +11,7 @@ exports.web3Login = async (req, res) => {
     const recovered = await sigUtil.recoverPersonalSignature(msgParams);
     if (recovered === address) {
       // check if the user exists.
-      const web3User = await Web3User.findOne({ address });
+      const web3User = await User.findOne({ address });
       if (web3User) {
         console.log("web3User : ", web3User);
         const tokenObject = {
@@ -20,15 +20,16 @@ exports.web3Login = async (req, res) => {
           userType: web3User.userType,
         };
         const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET, {
-          expiresIn: "1h",
+          expiresIn: "24h",
         });
         res.send({ token, user: web3User });
       }
       // register the user
       else {
-        const newUser = new Web3User({
+        const newUser = new User({
           _id: new mongoose.Types.ObjectId(),
           address,
+          userType: "web3User",
         });
         const web3User = await newUser.save();
         const tokenObject = {

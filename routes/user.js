@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
     email,
     username,
     password,
+    userType: "normalUser",
   });
   try {
     const savedUser = await newUser.save();
@@ -47,9 +48,8 @@ exports.login = (req, res) => {
       res.status(400).send(err);
     }
     if (!user) {
-      res.status(401).send("User not found.");
+      res.status(401).send("User or password not correct.");
     } else {
-      console.log("user.todo: ", user.todo);
       //Use schema userinstance method function. (In user-models)
       user.comparePassword(password, function (err, isMatch) {
         if (err) return res.status(400).send(err);
@@ -62,7 +62,7 @@ exports.login = (req, res) => {
           const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET);
           res.send({ success: true, token: token, user });
         } else {
-          res.status(401).send("Wrong password.");
+          res.status(401).send("User or password not correct.");
         }
       });
     }

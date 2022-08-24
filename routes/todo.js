@@ -1,9 +1,9 @@
 const { Todo } = require("../model");
 const mongoose = require("mongoose");
+var ObjectId = require("mongoose").Types.ObjectId;
 const User = require("../model/user");
 const GoogleUser = require("../model/googleUser");
 const Web3User = require("../model/web3user");
-const todo = require("../model/todo");
 // const { registerValidation, loginValidation } = require("../utils");
 
 //post("updateTodo", todo.updateTodo)
@@ -13,8 +13,6 @@ exports.updateTodo = async (req, res) => {
     title,
     content,
     userId,
-    googleUserId,
-    web3UserId,
     check,
     checkDone,
     confirmDone,
@@ -26,8 +24,6 @@ exports.updateTodo = async (req, res) => {
     title,
     content,
     userId,
-    googleUserId,
-    web3UserId,
     check,
     checkDone,
     confirmDone,
@@ -45,8 +41,6 @@ exports.updateTodo = async (req, res) => {
       title,
       content,
       userId,
-      googleUserId,
-      web3UserId,
       check,
       checkDone,
       confirmDone,
@@ -74,40 +68,23 @@ exports.updateTodo = async (req, res) => {
   // res.send("This is updateTodo routes.");
 };
 
+exports.deleteTodo = async (req, res) => {
+  const { _id } = req.body;
+  console.log("_id : ", _id);
+  await Todo.deleteOne({ _id });
+  res.status(200).send("Delete success!");
+  console.log("This is deleteTodo routes.");
+};
+
 exports.fetchTodo = async (req, res) => {
-  const { userType, _id } = req.body;
-  let Usermodel;
-  let userId;
-  let populateId;
-  switch (userType) {
-    case "googleUser":
-      Usermodel = "GoogleUser";
-      userId = { googleUserId: _id };
-      populateId = "googleUserId";
-      console.log("Usermodel : ", Usermodel);
-      break;
-    case "normalUser":
-      Usermodel = "User";
-      userId = { userId: _id };
-      populateId = "userId";
-      console.log("Usermodel : ", Usermodel);
-
-      break;
-    case "web3User":
-      Usermodel = "Web3User";
-      userId = { web3UserId: _id };
-      populateId = "web3UserId";
-      console.log("Usermodel : ", Usermodel);
-      console.log("userId : ", userId);
-
-      break;
-    default:
-      break;
-  }
-  Todo.find(userId)
-    .populate(populateId, ["_id"])
+  const { _id } = req.body;
+  let populateId = "userId";
+  Todo.find({ userId: _id })
+    // .populate(populateId, ["_id"])
+    // .populate(populateId)
     .exec(function (err, todos) {
       if (err) {
+        console.log(err);
         return res.status(401);
       }
       // console.log("The todos are", todos);
@@ -122,13 +99,24 @@ exports.fetchTodo = async (req, res) => {
 
 exports.updateLocalTodos = async (req, res) => {
   // console.log("req.body : ", req.body);
-  const { data, userId, googleUserId, web3UserId } = req.body;
-  data.map((todo) => {
-    console.log(todo._id);
-  });
-  console.log("userID : ", userId || googleUserId || web3UserId);
-  // console.log("data.length : ", data.length);
-  // console.log("type of data : ", typeof data);
-  // console.log("todos : ", JSON.parse(data));
-  // console.log("todos.length : ", todos[0]);
+  const { data, userId } = req.body;
+  const newData = await Promise.all(
+    data.map(async (todo) => {
+      if (!mongoose.Types.ObjectId.isValid(todo._id)) {
+        console.log("It's nano Id.");
+        const newToDo = new Todo({
+          ...todo,
+          _id: new mongoose.Types.ObjectId(),
+          userId,
+        });
+        const saveTodo = await newToDo.save();
+        console.log("Save successed!");
+        return saveTodo;
+      } else {
+        return todo;
+      }
+    })
+  );
+  // console.log("newData : ", newData);
+  res.send(newData);
 };
