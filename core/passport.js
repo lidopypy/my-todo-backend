@@ -8,6 +8,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const Web3Strategy = require("passport-web3");
 const User = require("../model/user");
 const MyToDoWeb_URL = require("../app.config").MyToDoWeb_URL;
+const herokuServer_URL = require("../app.config").herokuServer_URL;
 
 // const GoogleUser = require("../model/googleUser");
 // const Web3User = require("../model/web3user");
@@ -41,7 +42,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: MyToDoWeb_URL + "/google/redirect",
+      callbackURL: herokuServer_URL + "/google/redirect",
     },
     //passport verify callback
     (accessToken, refreshToken, profile, done) => {
