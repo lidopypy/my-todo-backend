@@ -25,7 +25,7 @@ exports.googleRedirect = async (req, res) => {
     user: req.user,
   });
   await res.cookie("cookies", jsonValue);
-  await res.redirect("/");
+  await res.redirect(MyToDoWeb_URL);
 
   // const tokenObject = { _id: user._id, email: user.email };
   // const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET);
