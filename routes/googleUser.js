@@ -8,7 +8,7 @@ exports.googleLogin = passport.authenticate("google", {
 
 exports.googlePass = passport.authenticate("google");
 
-exports.googleRedirect = (req, res) => {
+exports.googleRedirect = async (req, res) => {
   console.log("redirected");
   const tokenObject = {
     _id: req.user._id,
@@ -22,8 +22,8 @@ exports.googleRedirect = (req, res) => {
     jwt: token,
     user: req.user,
   });
-  res.cookie("cookies", jsonValue);
-  res.redirect(MyToDoWeb_URL);
+  await res.cookie("cookies", jsonValue);
+  await res.redirect(MyToDoWeb_URL);
 
   // const tokenObject = { _id: user._id, email: user.email };
   // const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET);
