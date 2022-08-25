@@ -13,6 +13,10 @@ module.exports = (app) => {
     res.send("Home.");
   });
 
+  app.get("/fail", (req, res) => {
+    res.send("fail.");
+  });
+
   //user routes
   app.post("/login", user.login);
   app.post("/register", user.register);
